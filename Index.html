@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barcode Scanner</title>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<style>
+body{
+font-family: Arial;
+text-align:center;
+margin:20px;
+}
+
+#reader{
+width:320px;
+margin:auto;
+}
+
+#result{
+margin-top:20px;
+font-size:18px;
+font-weight:bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<h2>Barcode Scanner</h2>
+
+<div id="reader"></div>
+
+<div id="result">Scan a barcode...</div>
+
+<script>
+
+function onScanSuccess(barcode){
+
+document.getElementById("result").innerHTML =
+"Barcode: " + barcode;
+
+alert(barcode);
+
+}
+
+function callAPI(barcode){
+
+fetch("https://api.example.com/product/" + barcode)
+
+.then(res => res.json())
+
+.then(data => {
+
+document.getElementById("result").innerHTML =
+"Product: " + JSON.stringify(data)
+
+})
+
+.catch(err => console.log(err))
+
+}
+
+let scanner = new Html5QrcodeScanner(
+"reader",
+{
+fps:10,
+qrbox:250
+}
+)
+
+scanner.render(onScanSuccess)
+
+</script>
+
+</body>
+</html>
