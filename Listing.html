@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Zyra Dress</title>
+<style>
+body{
+  font-family:Arial;
+  text-align:center;
+  margin-top:40px;
+}
+.product{
+  width:380px;
+  margin:auto;
+  border:1px solid #ddd;
+  padding:20px;
+  border-radius:10px;
+}
+img{
+  width:250px;
+}
+.size-btn{
+  padding:10px 15px;
+  margin:5px;
+  border:1px solid black;
+  cursor:pointer;
+}
+.size-btn.selected{
+  background-color: black;
+  color: white;
+}
+input{
+  padding:8px;
+  width:120px;
+}
+button{
+  padding:8px 12px;
+  cursor:pointer;
+  margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<div class="product">
+
+<h2>Zyra Dress</h2>
+<h4>Product ID: <span id="productIdLabel"></span></h4>
+
+<img src="https://dummyimage.com/300x300/ffc0cb/000&text=Zyra+Dress">
+
+<h4>Select Size</h4>
+<div>
+<button class="size-btn" id="sizeS" onclick="selectSize('S')">S</button>
+<button class="size-btn" id="sizeM" onclick="selectSize('M')">M</button>
+<button class="size-btn" id="sizeL" onclick="selectSize('L')">L</button>
+<button class="size-btn" id="sizeXL" onclick="selectSize('XL')">XL</button>
+</div>
+
+<br>
+<h4>Sold Price</h4>
+<input type="number" id="soldPrice" placeholder="Enter price">
+<br>
+<button onclick="markSold()">Mark Sold</button>
+
+<br><br>
+<button style="background:#007bff;color:white;border:none;padding:10px 15px;border-radius:5px;" onclick="scanAgain()">
+Scan Product Again
+</button>
+
+</div>
+
+<script>
+// Map of size → productId
+const productMap = {
+  "S": "100001",
+  "M": "100002",
+  "L": "100003",
+  "XL": "100004"
+};
+
+// Reverse map: productId → size
+const reverseMap = Object.entries(productMap).reduce((acc,[size,id])=>{
+  acc[id]=size;
+  return acc;
+},{});
+
+let selectedSize = ""
+let productId = ""
+
+// Read productId from URL
+function getProductId(){
+  const params = new URLSearchParams(window.location.search)
+  productId = params.get("productId")
+  if(!productId) productId = "Unknown"
+  document.getElementById("productIdLabel").innerText = productId
+
+  // Highlight size
+  const size = reverseMap[productId]
+  if(size){
+    highlightSize(size)
+    selectedSize = size
+  }
+}
+
+// Highlight size button
+function highlightSize(size){
+  const sizes = ["S","M","L","XL"]
+  sizes.forEach(s=>{
+    const btn = document.getElementById("size"+s)
+    if(s===size) btn.classList.add("selected")
+    else btn.classList.remove("selected")
+  })
+}
+
+// Size clicked → reload page with new productId
+function selectSize(size){
+  const newProductId = productMap[size] || "Unknown"
+  window.location.href = window.location.pathname + "?productId=" + newProductId
+}
+
+// Mark sold → show alert with price
+function markSold(){
+  const price = document.getElementById("soldPrice").value
+  if(selectedSize==""){
+    alert("Select size")
+    return
+  }
+  if(price==""){
+    alert("Enter sold price")
+    return
+  }
+  alert("Sold Size " + selectedSize + " for $" + price)
+}
+
+// Scan product again → navigate to scan page
+function scanAgain(){
+  window.location.href = "scan.html"  // Replace with your actual scan page
+}
+
+// Initialize
+getProductId()
+</script>
+
+</body>
+</html>
