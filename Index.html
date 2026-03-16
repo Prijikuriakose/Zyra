@@ -1,77 +1,67 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Barcode Scanner</title>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://unpkg.com/@zxing/library@latest"></script>
 
 <style>
 body{
 font-family: Arial;
 text-align:center;
-margin:20px;
+background:#f5f5f5;
 }
 
-#reader{
-width:320px;
-margin:auto;
+video{
+width:90%;
+max-width:400px;
+border:2px solid black;
+margin-top:20px;
 }
 
 #result{
+font-size:20px;
 margin-top:20px;
-font-size:18px;
-font-weight:bold;
+color:green;
 }
 </style>
-
 </head>
 
 <body>
 
 <h2>Barcode Scanner</h2>
 
-<div id="reader"></div>
+<video id="video"></video>
 
-<div id="result">Scan a barcode...</div>
+<div id="result">Scan a barcode</div>
 
 <script>
 
-function onScanSuccess(barcode){
+const codeReader = new ZXing.BrowserBarcodeReader()
+const videoElement = document.getElementById('video')
 
-document.getElementById("result").innerHTML =
-"Barcode: " + barcode;
-
-alert(barcode);
-
+codeReader.decodeFromConstraints(
+{
+video: {
+facingMode: "environment"
 }
+},
+videoElement,
+(result, err) => {
 
-function callAPI(barcode){
+if(result){
 
-fetch("https://api.example.com/product/" + barcode)
+document.getElementById("result").innerText =
+"Barcode: " + result.text
 
+// Example API call
+fetch("https://yourapi.com/barcode?code=" + result.text)
 .then(res => res.json())
-
-.then(data => {
-
-document.getElementById("result").innerHTML =
-"Product: " + JSON.stringify(data)
-
-})
-
+.then(data => console.log(data))
 .catch(err => console.log(err))
 
 }
 
-let scanner = new Html5QrcodeScanner(
-"reader",
-{
-fps:10,
-qrbox:250
-}
-)
-
-scanner.render(onScanSuccess)
+})
 
 </script>
 
