@@ -58,7 +58,7 @@ inputStream: {
 type: "LiveStream",
 target: document.querySelector('#scanner'),
 constraints: {
-facingMode: "environment",
+facingMode: { ideal: "environment" },  // back camera
 width: 640,
 height: 480
 }
@@ -97,10 +97,12 @@ lastCode = code
 document.getElementById("result").innerHTML =
 "Scanned: " + code
 
-// Example API call
-//fetch("https://yourapi.com/barcode?code=" + code)
-//.then(r=>console.log("API called"))
-alert(code);
+// Stop scanner
+Quagga.stop()
+
+// Navigate to listing page with product id
+window.location.href = "listing.html?productId=" + code
+
 }
 
 })
