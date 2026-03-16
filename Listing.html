@@ -78,6 +78,14 @@ const productMap = {
   "XL": "100004"
 };
 
+// Map of size → default price
+const defaultPriceMap = {
+  "S": 50,
+  "M": 50,
+  "L": 65,
+  "XL": 75
+};
+
 // Reverse map: productId → size
 const reverseMap = Object.entries(productMap).reduce((acc,[size,id])=>{
   acc[id]=size;
@@ -87,19 +95,18 @@ const reverseMap = Object.entries(productMap).reduce((acc,[size,id])=>{
 let selectedSize = ""
 let productId = ""
 
-// Read productId from URL
+// Read productId from URL and initialize
 function getProductId(){
   const params = new URLSearchParams(window.location.search)
   productId = params.get("productId")
-  if(!productId) productId = "Unknown"
+  if(!productId) productId = "S"  // Default to S if no productId
   document.getElementById("productIdLabel").innerText = productId
 
   // Highlight size
-  const size = reverseMap[productId]
-  if(size){
-    highlightSize(size)
-    selectedSize = size
-  }
+  const size = reverseMap[productId] || "S"  // Default size
+  highlightSize(size)
+  selectedSize = size
+  setDefaultPrice(size)
 }
 
 // Highlight size button
@@ -114,8 +121,15 @@ function highlightSize(size){
 
 // Size clicked → reload page with new productId
 function selectSize(size){
+  selectedSize = size
   const newProductId = productMap[size] || "Unknown"
   window.location.href = window.location.pathname + "?productId=" + newProductId
+}
+
+// Set default price in input
+function setDefaultPrice(size){
+  const price = defaultPriceMap[size] || ""
+  document.getElementById("soldPrice").value = price
 }
 
 // Mark sold → show alert with price
