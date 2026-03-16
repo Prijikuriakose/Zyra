@@ -1,22 +1,40 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Zyra Dress</title>
 <style>
-body {
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
   font-family: Arial, sans-serif;
-  text-align: center;
-  margin: 20px 10px;
+  background: #f5f5f5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body {
+  -webkit-touch-callout: none; 
+  -webkit-user-select: none; 
+  -ms-user-select: none; 
+  user-select: none;
 }
 
 .product {
-  max-width: 380px;
-  width: 90%;
-  margin: auto;
-  border: 1px solid #ddd;
+  width: 95%;
+  max-width: 400px;
+  background: #fff;
+  border-radius: 12px;
   padding: 20px;
-  border-radius: 10px;
   box-sizing: border-box;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  text-align: center;
 }
 
 img {
@@ -24,6 +42,7 @@ img {
   max-width: 250px;
   height: auto;
   margin-bottom: 15px;
+  border-radius: 8px;
 }
 
 .size-btn {
@@ -47,6 +66,8 @@ input {
   max-width: 150px;
   font-size: 16px;
   margin-top: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 button {
@@ -74,7 +95,7 @@ button {
 }
 
 /* Responsive adjustments */
-@media (max-width: 400px) {
+@media (max-width: 420px) {
   .size-btn {
     padding: 10px 12px;
     font-size: 14px;
@@ -146,10 +167,9 @@ let productId = ""
 function getProductId(){
   const params = new URLSearchParams(window.location.search)
   productId = params.get("productId")
-  if(!productId) productId = "S"  // Default to S if no productId
+  if(!productId) productId = "S"
   document.getElementById("productIdLabel").innerText = productId
 
-  // Highlight size
   const size = reverseMap[productId] || "S"
   highlightSize(size)
   selectedSize = size
@@ -157,7 +177,6 @@ function getProductId(){
   updateListingPrice(size)
 }
 
-// Highlight size button
 function highlightSize(size){
   const sizes = ["S","M","L","XL"]
   sizes.forEach(s=>{
@@ -167,27 +186,23 @@ function highlightSize(size){
   })
 }
 
-// Size clicked → reload page with new productId
 function selectSize(size){
   selectedSize = size
   const newProductId = productMap[size] || "Unknown"
   window.location.href = window.location.pathname + "?productId=" + newProductId
 }
 
-// Set default price in input
 function setDefaultPrice(size){
   const price = defaultPriceMap[size] || ""
   document.getElementById("soldPrice").value = price
   updateListingPrice(size)
 }
 
-// Update listing price label
 function updateListingPrice(size){
   const price = defaultPriceMap[size] || ""
   document.getElementById("listingPrice").innerText = price
 }
 
-// Mark sold → show alert with price
 function markSold(){
   const price = document.getElementById("soldPrice").value
   if(selectedSize==""){
@@ -201,7 +216,6 @@ function markSold(){
   alert("Sold Size " + selectedSize + " for $" + price)
 }
 
-// Scan product again → navigate to scan page
 function scanAgain(){
   window.location.href = "https://prijikuriakose.github.io/Zyra/barcode-scanner.html"
 }
