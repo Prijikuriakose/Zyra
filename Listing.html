@@ -19,13 +19,6 @@ html, body {
   align-items: center;
 }
 
-body {
-  -webkit-touch-callout: none; 
-  -webkit-user-select: none; 
-  -ms-user-select: none; 
-  user-select: none;
-}
-
 .product {
   width: 95%;
   max-width: 400px;
@@ -53,11 +46,19 @@ img {
   font-size: 16px;
   border-radius: 5px;
   min-width: 60px;
+  transition: all 0.2s;
 }
 
 .size-btn.selected {
   background-color: black;
   color: white;
+}
+
+.size-btn.sold {
+  text-decoration: line-through;
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
 }
 
 input {
@@ -163,6 +164,9 @@ const reverseMap = Object.entries(productMap).reduce((acc,[size,id])=>{
 let selectedSize = ""
 let productId = ""
 
+// Track sold items in memory
+let soldItems = {};
+
 // Read productId from URL and initialize
 function getProductId(){
   const params = new URLSearchParams(window.location.search)
@@ -177,32 +181,40 @@ function getProductId(){
   updateListingPrice(size)
 }
 
+// Highlight size button
 function highlightSize(size){
   const sizes = ["S","M","L","XL"]
   sizes.forEach(s=>{
     const btn = document.getElementById("size"+s)
     if(s===size) btn.classList.add("selected")
     else btn.classList.remove("selected")
+    if(soldItems[s]) btn.classList.add("sold")
+    else btn.classList.remove("sold")
   })
 }
 
+// Size clicked → reload page with new productId
 function selectSize(size){
+  if(soldItems[size]) return; // Prevent selecting sold size
   selectedSize = size
   const newProductId = productMap[size] || "Unknown"
   window.location.href = window.location.pathname + "?productId=" + newProductId
 }
 
+// Set default price in input
 function setDefaultPrice(size){
   const price = defaultPriceMap[size] || ""
   document.getElementById("soldPrice").value = price
   updateListingPrice(size)
 }
 
+// Update listing price label
 function updateListingPrice(size){
   const price = defaultPriceMap[size] || ""
   document.getElementById("listingPrice").innerText = price
 }
 
+// Mark sold → strike out the size
 function markSold(){
   const price = document.getElementById("soldPrice").value
   if(selectedSize==""){
@@ -214,8 +226,11 @@ function markSold(){
     return
   }
   alert("Sold Size " + selectedSize + " for $" + price)
+  soldItems[selectedSize] = true
+  highlightSize(selectedSize)
 }
 
+// Scan product again → navigate to scan page
 function scanAgain(){
   window.location.href = "https://prijikuriakose.github.io/Zyra/barcode-scanner.html"
 }
