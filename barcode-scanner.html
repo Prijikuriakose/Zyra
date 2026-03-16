@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Barcode Scanner</title>
+<script src="https://unpkg.com/@zxing/library@latest"></script>
+
+<style>
+body{
+font-family: Arial;
+text-align:center;
+background:#f5f5f5;
+}
+
+video{
+width:90%;
+max-width:400px;
+border:2px solid black;
+margin-top:20px;
+}
+
+#result{
+font-size:20px;
+margin-top:20px;
+color:green;
+}
+</style>
+</head>
+
+<body>
+
+<h2>Barcode Scanner</h2>
+
+<video id="video"></video>
+
+<div id="result">Scan a barcode</div>
+
+<script>
+
+const codeReader = new ZXing.BrowserBarcodeReader()
+const videoElement = document.getElementById('video')
+
+codeReader.decodeFromConstraints(
+{
+video: {
+facingMode: "environment"
+}
+},
+videoElement,
+(result, err) => {
+
+if(result){
+
+document.getElementById("result").innerText =
+"Barcode: " + result.text
+
+// Example API call
+alert(result.text);
+
+
+}
+
+})
+
+</script>
+
+</body>
+</html>
