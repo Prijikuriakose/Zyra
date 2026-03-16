@@ -54,8 +54,7 @@ img {
   color: white;
 }
 
-.size-btn.sold {
-  text-decoration: line-through;
+.size-btn:disabled {
   background-color: #ccc;
   color: #666;
   cursor: not-allowed;
@@ -95,7 +94,6 @@ button {
   color: #333;
 }
 
-/* Responsive adjustments */
 @media (max-width: 420px) {
   .size-btn {
     padding: 10px 12px;
@@ -175,21 +173,27 @@ function getProductId(){
   document.getElementById("productIdLabel").innerText = productId
 
   const size = reverseMap[productId] || "S"
-  highlightSize(size)
   selectedSize = size
   setDefaultPrice(size)
   updateListingPrice(size)
+  updateSizeButtons()
 }
 
-// Highlight size button
-function highlightSize(size){
+// Highlight size buttons / disable sold
+function updateSizeButtons(){
   const sizes = ["S","M","L","XL"]
   sizes.forEach(s=>{
     const btn = document.getElementById("size"+s)
-    if(s===size) btn.classList.add("selected")
-    else btn.classList.remove("selected")
-    if(soldItems[s]) btn.classList.add("sold")
-    else btn.classList.remove("sold")
+    if(soldItems[s]){
+      btn.disabled = true
+      btn.classList.remove("selected")
+    } else if(s === selectedSize){
+      btn.disabled = false
+      btn.classList.add("selected")
+    } else {
+      btn.disabled = false
+      btn.classList.remove("selected")
+    }
   })
 }
 
@@ -205,7 +209,6 @@ function selectSize(size){
 function setDefaultPrice(size){
   const price = defaultPriceMap[size] || ""
   document.getElementById("soldPrice").value = price
-  updateListingPrice(size)
 }
 
 // Update listing price label
@@ -214,7 +217,7 @@ function updateListingPrice(size){
   document.getElementById("listingPrice").innerText = price
 }
 
-// Mark sold → strike out the size
+// Mark sold → disable button
 function markSold(){
   const price = document.getElementById("soldPrice").value
   if(selectedSize==""){
@@ -227,7 +230,7 @@ function markSold(){
   }
   alert("Sold Size " + selectedSize + " for $" + price)
   soldItems[selectedSize] = true
-  highlightSize(selectedSize)
+  updateSizeButtons()
 }
 
 // Scan product again → navigate to scan page
